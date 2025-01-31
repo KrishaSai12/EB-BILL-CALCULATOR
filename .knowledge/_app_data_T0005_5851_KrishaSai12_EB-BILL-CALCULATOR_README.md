@@ -1,0 +1,1 @@
+{"is_source_file": false, "format": "", "description": "", "external_files": [], "external_methods": [], "published": [], "classes": [], "methods": [], "calls": [], "search-terms": [], "state": 2, "filename": "/app/data/T0005/5851/KrishaSai12/EB-BILL-CALCULATOR/README.md", "hash": "95fe757910ecdabbd19ad4ea4b73d501", "format-version": 3, "code-base-name": "b40617d"}
