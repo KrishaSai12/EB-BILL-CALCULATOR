@@ -1,0 +1,320 @@
+"
+        MATCH (u:User {Username: 'a49884f8-c0c1-708f-fa90-6082bc7ed290'})-[a:ASSIGNED_TO]->(t)<-[:HAS_CHILD*0..]-(p:Project)
+        RETURN ID(t) AS task_id, t.Title AS title, t.Description AS description, 
+            t.Type as type, a.assigned_at as assigned_at, a.assigned_by as assigned_by,
+            t.Priority AS priority, t.Status AS status ,ID(p) AS project_id, p.Title AS project_title
+        ",0.002614736557006836
+"
+        UNWIND [] AS assigner_id
+        MATCH (assigner:User {Username: assigner_id})
+        RETURN assigner.Username AS assigned_by, assigner.Name AS assigner_name, assigner.Email AS assigner_email
+        ",0.0020008087158203125
+"
+            MATCH (d:code_query)
+            WHERE d.Username = $user_id 
+            AND d.IsDeleted = false 
+            AND d.ProjectId = $project_id
+            WITH d, ID(d) as node_id
+            OPTIONAL MATCH (p:Project)
+            WHERE ID(p) = d.ProjectId
+            RETURN d, node_id, p.Title as project_title
+            ORDER BY d.CreatedAt DESC 
+            LIMIT $limit
+            ",0.14649343490600586
+"
+        MATCH (n:Project) 
+        WHERE ID(n) = $node_id 
+        RETURN ID(n) AS id, LABELS(n) AS labels, properties(n) AS properties
+        , n.is_active AS is_active",0.0027649402618408203
+"
+        MATCH (n:Project) 
+        WHERE ID(n) = $node_id 
+        RETURN ID(n) AS id, LABELS(n) AS labels, properties(n) AS properties
+        , n.is_active AS is_active",0.0024764537811279297
+"
+        MATCH (n:Project) 
+        WHERE ID(n) = $node_id 
+        RETURN ID(n) AS id, LABELS(n) AS labels, properties(n) AS properties
+        , n.is_active AS is_active",0.0024917125701904297
+"
+        MATCH (u:User)-[r:WORKS_ON]->(p:Project|Product)
+        WHERE ID(p) = 5851
+        RETURN u.Username AS user_id, u.Name as name, u.Email as email, r.role AS role, r.responsibilities AS responsibilities
+        ",0.0032439231872558594
+"
+        MATCH (p:Project)
+        WHERE p.is_active = True
+        OPTIONAL MATCH (u:User) WHERE u.Username = p.created_by
+        RETURN ID(p) AS id, p.Title AS Title, p.created_at AS created_at, p.created_by AS created_by, u.Name AS creator_name, u.Email AS creator_email, u.Picture AS creator_picture
+        ORDER BY p.created_at DESC
+        ",0.024549245834350586
+"
+        MATCH (n:Project) 
+        WHERE ID(n) = $node_id 
+        RETURN ID(n) AS id, LABELS(n) AS labels, properties(n) AS properties
+        , n.is_active AS is_active",0.0025975704193115234
+"
+            MATCH (u:User {Username: $user_id})-[:HAS_CHILD]->(d:Conversation)
+            WHERE d.IsDeleted = false
+            RETURN d, ID(d) ORDER BY d.CreatedAt DESC LIMIT $limit
+            ",0.002429962158203125
+"
+        MATCH (n:Project) 
+        WHERE ID(n) = $node_id 
+        RETURN ID(n) AS id, LABELS(n) AS labels, properties(n) AS properties
+        , n.is_active AS is_active",0.003443002700805664
+"
+        MATCH (n:Project)
+        WHERE ID(n) = $node_id
+         AND (n.is_active = true OR NOT ""Project"" IN labels(n))
+        RETURN n
+        ",0.004963397979736328
+"
+            MATCH (n:Project)-[r:HAS_CHILD]->(related)
+            WHERE ID(n) = $node_id AND ('RequirementRoot' IN labels(related) OR 'ArchitectureRoot' IN labels(related) OR 'WorkItemRoot' IN labels(related))
+            RETURN ID(related) as id, labels(related) as labels, properties(related) as properties, type(r) as relationship_type
+            ",0.003388643264770508
+"
+        MATCH (u:User)-[r:WORKS_ON]->(p:Project|Product)
+        WHERE ID(p) = 21161
+        RETURN u.Username AS user_id, u.Name as name, u.Email as email, r.role AS role, r.responsibilities AS responsibilities
+        ",0.008429765701293945
+"
+        MATCH (u:User {Username: 'a49884f8-c0c1-708f-fa90-6082bc7ed290'})-[:INVOLVED_IN]->(d:Discussion)<-[:HAS_CHILD]-(n)<-[:HAS_CHILD*0..]-(p:Project|Product)
+        RETURN ID(d) AS discussion_id, d.Title AS title, d.Description AS description, d.updated_at AS date, ID(n) as task_id, n.Type as task_type , n.Title as task_title, ID(p) AS project_id, p.Title AS project_title
+        ",0.02085709571838379
+"
+        MATCH (p:Project)-[:HAS_CHILD*]->(n:Requirement)
+        WHERE ID(p) = $project_id AND NOT n:RequirementRoot AND NOT n:ArchitecturalRequirement
+        WITH CASE 
+                WHEN n.Status IS NULL THEN 'To Do' 
+                ELSE n.Status 
+            END AS status, count(n) AS count
+        RETURN collect({status: status, count: count}) AS results
+        ",0.003451108932495117
+"
+            MATCH (u:User {Username: $user_id})-[:HAS_CHILD]->(d:Conversation)
+            WHERE d.IsDeleted = false AND d.ProjectId = $project_id
+            RETURN d, ID(d) ORDER BY d.CreatedAt DESC LIMIT $limit
+            ",0.0032570362091064453
+"
+            MATCH (p:Project)
+            WHERE ID(p) = 21161
+            WITH p
+            OPTIONAL MATCH (p)-[:HAS_CHILD|CONTAINS*]->(epic:Epic)
+            OPTIONAL MATCH (epic)-[:HAS_CHILD|CONTAINS*]->(story:UserStory)
+            OPTIONAL MATCH (story)-[:HAS_CHILD|CONTAINS*]->(task:Task)
+            RETURN 
+                COUNT(DISTINCT epic) as epicCount,
+                COUNT(DISTINCT story) as userStoryCount,
+                COUNT(DISTINCT task) as taskCount
+        ",0.006900787353515625
+"
+        MATCH (n:Project) 
+        WHERE ID(n) = $node_id 
+        RETURN ID(n) AS id, LABELS(n) AS labels, properties(n) AS properties
+        , n.is_active AS is_active",0.005736827850341797
+"
+            MATCH (p:Project)
+            WHERE ID(p) = 21161
+            WITH p
+            OPTIONAL MATCH (p)-[:HAS_CHILD|CONTAINS*]->(sc:SystemContext)
+            WHERE NOT sc:Discussion
+            OPTIONAL MATCH (sc)-[:HAS_CHILD|CONTAINS*]->(c:Container)
+            WHERE NOT c:Discussion
+            OPTIONAL MATCH (c)-[:HAS_CHILD|CONTAINS*]->(comp:Component)
+            WHERE NOT comp:Discussion
+            OPTIONAL MATCH (c)-[:HAS_CHILD|CONTAINS*]->(des:Design)
+            WHERE NOT des:Discussion
+            OPTIONAL MATCH (c)-[:HAS_CHILD|CONTAINS*]->(i:Interface)
+            WHERE NOT i:Discussion
+            OPTIONAL MATCH (c)-[:HAS_CHILD|CONTAINS*]->(d:Deployment)
+            WHERE NOT d:Discussion
+            RETURN
+                COUNT(DISTINCT sc) as systemContextCount,
+                COUNT(DISTINCT c) as containerCount,
+                COUNT(DISTINCT comp) as componentCount,
+                COUNT(DISTINCT des) as designCount,
+                COUNT(DISTINCT i) as interfaceCount,
+                COUNT(DISTINCT d) as deploymentCount
+        ",0.003135204315185547
+"
+            MATCH (p:Project)
+            WHERE ID(p) = 21161
+            WITH p
+            OPTIONAL MATCH (p)-[:HAS_CHILD|CONTAINS*]->(sc:SystemContext)
+            WHERE NOT sc:Discussion
+            OPTIONAL MATCH (sc)-[:HAS_CHILD|CONTAINS*]->(c:Container)
+            WHERE NOT c:Discussion
+            OPTIONAL MATCH (c)-[:HAS_CHILD|CONTAINS*]->(d:Deployment)
+            WHERE NOT d:Discussion
+            RETURN COUNT(DISTINCT d) as deploymentCount
+        ",0.002493143081665039
+"
+        MATCH (n:Project) 
+        WHERE ID(n) = $node_id 
+        RETURN ID(n) AS id, LABELS(n) AS labels, properties(n) AS properties
+        , n.is_active AS is_active",0.0023827552795410156
+"
+        MATCH (u:User)-[r:WORKS_ON]->(p:Project|Product)
+        WHERE ID(p) = 21161
+        RETURN u.Username AS user_id, u.Name as name, u.Email as email, r.role AS role, r.responsibilities AS responsibilities
+        ",0.003889322280883789
+"
+        MATCH (n:Project) 
+        WHERE ID(n) = $node_id 
+        RETURN ID(n) AS id, LABELS(n) AS labels, properties(n) AS properties
+        , n.is_active AS is_active",0.12926816940307617
+"
+        MATCH (p:Project)
+        WHERE p.is_active = True
+        OPTIONAL MATCH (u:User) WHERE u.Username = p.created_by
+        RETURN ID(p) AS id, p.Title AS Title, p.created_at AS created_at, p.created_by AS created_by, u.Name AS creator_name, u.Email AS creator_email, u.Picture AS creator_picture
+        ORDER BY p.created_at DESC
+        ",0.022289037704467773
+"
+            MATCH (u:User {Username: $user_id})-[:HAS_CHILD]->(d:Conversation)
+            WHERE d.IsDeleted = false
+            RETURN d, ID(d) ORDER BY d.CreatedAt DESC LIMIT $limit
+            ",0.0023050308227539062
+"
+        MATCH (p:Project)
+        WHERE p.is_active = True
+        OPTIONAL MATCH (u:User) WHERE u.Username = p.created_by
+        RETURN ID(p) AS id, p.Title AS Title, p.created_at AS created_at, p.created_by AS created_by, u.Name AS creator_name, u.Email AS creator_email, u.Picture AS creator_picture
+        ORDER BY p.created_at DESC
+        ",0.010549783706665039
+"CREATE (n:Project) SET n.Title = $Title, n.Description = $Description, n.Type = $Type, n.created_by = $created_by, n.created_at = $created_at, n.is_active = $is_active RETURN ID(n) AS id, LABELS(n) AS labels, properties(n) AS properties",0.015691518783569336
+"CREATE (n:SystemContext) SET n.Title = $Title, n.Description = $Description, n.Type = $Type, n.Details = $Details RETURN ID(n) AS id, LABELS(n) AS labels, properties(n) AS properties",0.02011728286743164
+"CREATE (n:RequirementRoot:Requirement) SET n.Title = $Title, n.Description = $Description, n.Type = $Type, n.Details = $Details RETURN ID(n) AS id, LABELS(n) AS labels, properties(n) AS properties",0.029412031173706055
+"CREATE (n:ArchitectureRoot:Architecture) SET n.Title = $Title, n.Description = $Description, n.Type = $Type, n.Details = $Details RETURN ID(n) AS id, LABELS(n) AS labels, properties(n) AS properties",0.03615260124206543
+"CREATE (n:WorkItemRoot:WorkItem) SET n.Title = $Title, n.Description = $Description, n.Type = $Type, n.Details = $Details RETURN ID(n) AS id, LABELS(n) AS labels, properties(n) AS properties",0.041800498962402344
+"
+        MATCH (n), (m)
+        WHERE ID(n) = $start_node_id AND ID(m) = $end_node_id
+        CREATE (n)-[r:HAS_CHILD]->(m)
+        
+        RETURN type(r) AS relationship_type, properties(r) AS properties
+        ",0.02162027359008789
+"
+        MATCH (n), (m)
+        WHERE ID(n) = $start_node_id AND ID(m) = $end_node_id
+        CREATE (n)-[r:HAS_CHILD]->(m)
+        
+        RETURN type(r) AS relationship_type, properties(r) AS properties
+        ",0.02837657928466797
+"
+        MATCH (n), (m)
+        WHERE ID(n) = $start_node_id AND ID(m) = $end_node_id
+        CREATE (n)-[r:HAS_CHILD]->(m)
+        
+        RETURN type(r) AS relationship_type, properties(r) AS properties
+        ",0.029171228408813477
+"
+        MATCH (n), (m)
+        WHERE ID(n) = $start_node_id AND ID(m) = $end_node_id
+        CREATE (n)-[r:HAS_CHILD]->(m)
+        
+        RETURN type(r) AS relationship_type, properties(r) AS properties
+        ",0.02769756317138672
+"CREATE (n:ArchitecturalRequirement:Requirement) SET n.Title = $Title, n.Description = $Description, n.Type = $Type, n.Details = $Details RETURN ID(n) AS id, LABELS(n) AS labels, properties(n) AS properties",0.006760120391845703
+"
+        MATCH (n), (m)
+        WHERE ID(n) = $start_node_id AND ID(m) = $end_node_id
+        CREATE (n)-[r:HAS_CHILD]->(m)
+        
+        RETURN type(r) AS relationship_type, properties(r) AS properties
+        ",0.0035638809204101562
+"
+            MATCH (u:User {Username: $user_id})-[:HAS_CHILD]->(d:Conversation)
+            WHERE d.IsDeleted = false
+            RETURN d, ID(d) ORDER BY d.CreatedAt DESC LIMIT $limit
+            ",0.007000446319580078
+"
+        MATCH (u:User)-[r:WORKS_ON]->(p:Project|Product)
+        WHERE ID(p) = 22302
+        RETURN u.Username AS user_id, u.Name as name, u.Email as email, r.role AS role, r.responsibilities AS responsibilities
+        ",0.156602144241333
+"
+            MATCH (p:Project)
+            WHERE ID(p) = 22302
+            WITH p
+            OPTIONAL MATCH (p)-[:HAS_CHILD|CONTAINS*]->(epic:Epic)
+            OPTIONAL MATCH (epic)-[:HAS_CHILD|CONTAINS*]->(story:UserStory)
+            OPTIONAL MATCH (story)-[:HAS_CHILD|CONTAINS*]->(task:Task)
+            RETURN 
+                COUNT(DISTINCT epic) as epicCount,
+                COUNT(DISTINCT story) as userStoryCount,
+                COUNT(DISTINCT task) as taskCount
+        ",0.15864849090576172
+"
+            MATCH (u:User {Username: $user_id})-[:HAS_CHILD]->(d:Conversation)
+            WHERE d.IsDeleted = false AND d.ProjectId = $project_id
+            RETURN d, ID(d) ORDER BY d.CreatedAt DESC LIMIT $limit
+            ",0.00884699821472168
+"
+        MATCH (p:Project)-[:HAS_CHILD*]->(n:Requirement)
+        WHERE ID(p) = $project_id AND NOT n:RequirementRoot AND NOT n:ArchitecturalRequirement
+        WITH CASE 
+                WHEN n.Status IS NULL THEN 'To Do' 
+                ELSE n.Status 
+            END AS status, count(n) AS count
+        RETURN collect({status: status, count: count}) AS results
+        ",0.00931859016418457
+"
+        MATCH (n:Project)
+        WHERE ID(n) = $node_id
+         AND (n.is_active = true OR NOT ""Project"" IN labels(n))
+        RETURN n
+        ",0.01141500473022461
+"
+        MATCH (n:Project) 
+        WHERE ID(n) = $node_id 
+        RETURN ID(n) AS id, LABELS(n) AS labels, properties(n) AS properties
+        , n.is_active AS is_active",0.009589672088623047
+"
+            MATCH (n:Project)-[r:HAS_CHILD]->(related)
+            WHERE ID(n) = $node_id AND ('RequirementRoot' IN labels(related) OR 'ArchitectureRoot' IN labels(related) OR 'WorkItemRoot' IN labels(related))
+            RETURN ID(related) as id, labels(related) as labels, properties(related) as properties, type(r) as relationship_type
+            ",0.01039433479309082
+"
+        MATCH (u:User)-[r:WORKS_ON]->(p:Project|Product)
+        WHERE ID(p) = 22302
+        RETURN u.Username AS user_id, u.Name as name, u.Email as email, r.role AS role, r.responsibilities AS responsibilities
+        ",0.006677865982055664
+"
+            MATCH (p:Project)
+            WHERE ID(p) = 22302
+            WITH p
+            OPTIONAL MATCH (p)-[:HAS_CHILD|CONTAINS*]->(sc:SystemContext)
+            WHERE NOT sc:Discussion
+            OPTIONAL MATCH (sc)-[:HAS_CHILD|CONTAINS*]->(c:Container)
+            WHERE NOT c:Discussion
+            OPTIONAL MATCH (c)-[:HAS_CHILD|CONTAINS*]->(comp:Component)
+            WHERE NOT comp:Discussion
+            OPTIONAL MATCH (c)-[:HAS_CHILD|CONTAINS*]->(des:Design)
+            WHERE NOT des:Discussion
+            OPTIONAL MATCH (c)-[:HAS_CHILD|CONTAINS*]->(i:Interface)
+            WHERE NOT i:Discussion
+            OPTIONAL MATCH (c)-[:HAS_CHILD|CONTAINS*]->(d:Deployment)
+            WHERE NOT d:Discussion
+            RETURN
+                COUNT(DISTINCT sc) as systemContextCount,
+                COUNT(DISTINCT c) as containerCount,
+                COUNT(DISTINCT comp) as componentCount,
+                COUNT(DISTINCT des) as designCount,
+                COUNT(DISTINCT i) as interfaceCount,
+                COUNT(DISTINCT d) as deploymentCount
+        ",0.02764439582824707
+"
+            MATCH (p:Project)
+            WHERE ID(p) = 22302
+            WITH p
+            OPTIONAL MATCH (p)-[:HAS_CHILD|CONTAINS*]->(sc:SystemContext)
+            WHERE NOT sc:Discussion
+            OPTIONAL MATCH (sc)-[:HAS_CHILD|CONTAINS*]->(c:Container)
+            WHERE NOT c:Discussion
+            OPTIONAL MATCH (c)-[:HAS_CHILD|CONTAINS*]->(d:Deployment)
+            WHERE NOT d:Discussion
+            RETURN COUNT(DISTINCT d) as deploymentCount
+        ",0.016118526458740234
